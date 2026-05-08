@@ -28,11 +28,14 @@ _LOGGER = logging.getLogger(__name__)
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; HomeAssistantIntegration/1.0)"}
 
 
+TABLE_CLASS = "e10"
+
+
 def detect_source_type(html: str) -> str | None:
     soup = BeautifulSoup(html, "html.parser")
     if soup.find("div", id="fuel-95"):
         return SOURCE_TYPE_A
-    if soup.find("table", class_="sortable"):
+    if soup.find("table", class_=TABLE_CLASS):
         return SOURCE_TYPE_B
     return None
 
@@ -69,18 +72,20 @@ def fetch_type_a(soup: BeautifulSoup, station_filter: str | None = None) -> dict
 
 def fetch_type_b(html: str, station_filter: str | None = None) -> dict:
     soup = BeautifulSoup(html, "html.parser")
-    table = soup.find("table", class_="sortable")
+    table = soup.find("table", class_=TABLE_CLASS)
     if not table:
         return {}
 
     result: dict[str, list] = {}
     for fuel_key, col_idx in FUEL_COLUMNS.items():
         stations = []
-        for row in table.select("tbody tr"):
+        for row in table.select("tr"):
             cols = row.find_all("td")
-            if len(cols) < 5:
+            if len(cols) < 5 or cols[0].get("class"):
                 continue
             name = cols[0].get_text(strip=True)
+            if not name:
+                continue
             if station_filter and station_filter != STATION_CHEAPEST and name != station_filter:
                 continue
             raw = cols[col_idx].get_text(strip=True).lstrip("*")

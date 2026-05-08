@@ -69,11 +69,11 @@ def _validate_and_fetch(base_url: str, city: str) -> tuple[str, str, str, list[s
     if source_type == SOURCE_TYPE_B:
         html_win = resp.content.decode("windows-1252", errors="replace")
         soup = BeautifulSoup(html_win, "html.parser")
-        table = soup.find("table", class_="sortable")
+        table = soup.find("table", class_="e10")
         if table:
-            for row in table.select("tbody tr"):
+            for row in table.select("tr"):
                 cols = row.find_all("td")
-                if cols:
+                if len(cols) >= 5 and not cols[0].get("class"):
                     name = cols[0].get_text(strip=True)
                     if name:
                         stations.append(name)
