@@ -1,12 +1,12 @@
 {
   "domain": "fuel_price",
   "name": "Fuel Price Sensor",
-  "version": "1.0.0",
-  "documentation": "https://github.com/jessepesse/fuel-price-ha",
-  "issue_tracker": "https://github.com/jessepesse/fuel-price-ha/issues",
-  "requirements": ["beautifulsoup4>=4.12.0"],
   "codeowners": ["@jessepesse"],
+  "config_flow": true,
+  "documentation": "https://github.com/jessepesse/fuel-price-ha",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "config_flow": true
+  "issue_tracker": "https://github.com/jessepesse/fuel-price-ha/issues",
+  "requirements": ["beautifulsoup4>=4.12.0"],
+  "version": "1.0.0"
 }
