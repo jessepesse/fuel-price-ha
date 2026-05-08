@@ -155,10 +155,22 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not user_input.get(CONF_FUEL_TYPES):
                 errors["base"] = "no_fuel_types"
             else:
-                await self.async_set_unique_id(
-                    f"fuel_price_{urlparse(self._base_url).netloc}_{self._city}"
+                station_slug = (
+                    self._station.lower().replace(" ", "_")[:40]
+                    if self._source_type == SOURCE_TYPE_B
+                    else ""
                 )
+                unique_id = f"fuel_price_{urlparse(self._base_url).netloc}_{self._city}"
+                if station_slug:
+                    unique_id += f"_{station_slug}"
+                await self.async_set_unique_id(unique_id)
                 self._abort_if_unique_id_configured()
+
+                if self._source_type == SOURCE_TYPE_B and self._station != STATION_CHEAPEST:
+                    title = self._station[:50]
+                else:
+                    title = self._city.capitalize()
+
                 entry_data = {
                     CONF_BASE_URL: self._base_url,
                     CONF_CITY: self._city,
@@ -168,7 +180,7 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if self._source_type == SOURCE_TYPE_B:
                     entry_data[CONF_STATION] = self._station
                 return self.async_create_entry(
-                    title=self._city.capitalize(),
+                    title=title,
                     data=entry_data,
                 )
 
