@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fuel Price Sensor",
+        "description": "Enter the base URL of a compatible fuel price service and the city you want to track.",
+        "data": {
+          "base_url": "Base URL",
+          "city": "City"
+        }
+      },
+      "fuel_types": {
+        "title": "Select fuel types",
+        "description": "Choose which fuel types you want to track.",
+        "data": {
+          "fuel_types": "Fuel types"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the service",
+      "city_not_found": "City not found at the given URL",
+      "invalid_city": "Invalid city name",
+      "invalid_url": "Invalid URL",
+      "no_fuel_types": "Select at least one fuel type"
+    },
+    "abort": {
+      "already_configured": "This city is already configured"
+    }
+  }
+}

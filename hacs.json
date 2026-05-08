@@ -1,0 +1,9 @@
+{
+  "name": "Fuel Price Sensor",
+  "content_in_root": false,
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "fuel_price.zip",
+  "homeassistant": "2025.1.0",
+  "hacs": "2.0.0"
+}

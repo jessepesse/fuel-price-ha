@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Polttoaineen hintasensori",
+        "description": "Anna yhteensopivan polttoainehintapalvelun URL-osoite ja seurattava kaupunki.",
+        "data": {
+          "base_url": "Palvelun URL",
+          "city": "Kaupunki"
+        }
+      },
+      "fuel_types": {
+        "title": "Valitse polttoainetyypit",
+        "description": "Valitse mitä polttoaineita haluat seurata.",
+        "data": {
+          "fuel_types": "Polttoainetyypit"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Palveluun ei saada yhteyttä",
+      "city_not_found": "Kaupunkia ei löydy annetusta osoitteesta",
+      "invalid_city": "Virheellinen kaupungin nimi",
+      "invalid_url": "Virheellinen URL-osoite",
+      "no_fuel_types": "Valitse vähintään yksi polttoainetyyppi"
+    },
+    "abort": {
+      "already_configured": "Tämä kaupunki on jo lisätty"
+    }
+  }
+}
