@@ -47,10 +47,10 @@ class FuelPriceSensor(CoordinatorEntity[FuelPriceCoordinator], SensorEntity):
 
         if station != STATION_CHEAPEST:
             self._attr_name = f"{station} {fuel_label}"
-            self._attr_unique_id = f"fuel_price_{coordinator.city}_{fuel_key}_{station}"
+            self._attr_unique_id = f"fuel_price_{coordinator.city}_{fuel_key}_{station[:40]}"
         else:
             self._attr_name = f"Fuel Price {city_cap} {fuel_label}"
-            self._attr_unique_id = f"fuel_price_{coordinator.city}_{fuel_key}"
+            self._attr_unique_id = f"fuel_price_{coordinator.city}_{fuel_key}_cheapest"
 
     def _get_stations(self) -> list[dict]:
         if not self.coordinator.data:

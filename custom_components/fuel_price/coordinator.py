@@ -64,7 +64,7 @@ def fetch_type_a(soup: BeautifulSoup, station_filter: str | None = None) -> dict
                 "price": price,
                 "updated": cols[3].get_text(strip=True),
             })
-            if not station_filter and len(stations) == TOP_N_STATIONS:
+            if station_filter in (None, STATION_CHEAPEST) and len(stations) == TOP_N_STATIONS:
                 break
         if stations:
             result[fuel_key] = stations
