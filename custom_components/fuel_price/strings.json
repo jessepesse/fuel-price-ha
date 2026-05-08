@@ -9,6 +9,13 @@
           "city": "City"
         }
       },
+      "station": {
+        "title": "Select station",
+        "description": "Choose a specific station to track, or select 'Cheapest' to always show the cheapest available price.",
+        "data": {
+          "station": "Station"
+        }
+      },
       "fuel_types": {
         "title": "Select fuel types",
         "description": "Choose which fuel types you want to track.",

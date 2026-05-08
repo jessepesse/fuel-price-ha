@@ -9,6 +9,13 @@
           "city": "Kaupunki"
         }
       },
+      "station": {
+        "title": "Valitse asema",
+        "description": "Valitse seurattava asema, tai valitse 'Halvin' näyttääksesi aina halvimman saatavilla olevan hinnan.",
+        "data": {
+          "station": "Asema"
+        }
+      },
       "fuel_types": {
         "title": "Valitse polttoainetyypit",
         "description": "Valitse mitä polttoaineita haluat seurata.",

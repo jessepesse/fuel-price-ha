@@ -12,7 +12,19 @@ from homeassistant.helpers.selector import (
     SelectSelectorMode,
 )
 
-from .const import DOMAIN, CONF_CITY, CONF_BASE_URL, CONF_FUEL_TYPES, FUEL_TABS
+from .const import (
+    DOMAIN,
+    CONF_CITY,
+    CONF_BASE_URL,
+    CONF_FUEL_TYPES,
+    CONF_STATION,
+    CONF_SOURCE_TYPE,
+    FUEL_TABS,
+    SOURCE_TYPE_A,
+    SOURCE_TYPE_B,
+    STATION_CHEAPEST,
+)
+from .coordinator import detect_source_type, fetch_type_b
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; HomeAssistantIntegration/1.0)"}
 
@@ -22,11 +34,12 @@ FUEL_OPTIONS = [
 ]
 
 
-def _validate_connection(base_url: str, city: str) -> tuple[str, str]:
+def _validate_and_fetch(base_url: str, city: str) -> tuple[str, str, str, list[str]]:
+    """Returns (base_url, city, source_type, station_names_for_type_b)."""
     base_url = base_url.strip().rstrip("/")
     city = city.strip().lower()
 
-    if not city.replace("-", "").isalpha():
+    if not city.replace("-", "").replace("_", "").isalpha():
         raise ValueError("invalid_city")
 
     parsed = urlparse(base_url)
@@ -38,11 +51,34 @@ def _validate_connection(base_url: str, city: str) -> tuple[str, str]:
         raise ValueError("city_not_found")
     resp.raise_for_status()
 
-    soup = BeautifulSoup(resp.text, "html.parser")
-    if not soup.find("div", id="fuel-95"):
+    # Try UTF-8 first for type detection, fall back to windows-1252
+    try:
+        html_utf8 = resp.text
+        source_type = detect_source_type(html_utf8)
+    except Exception:
+        source_type = None
+
+    if source_type is None:
+        html_win = resp.content.decode("windows-1252", errors="replace")
+        source_type = detect_source_type(html_win)
+
+    if source_type is None:
         raise ValueError("city_not_found")
 
-    return base_url, city
+    stations: list[str] = []
+    if source_type == SOURCE_TYPE_B:
+        html_win = resp.content.decode("windows-1252", errors="replace")
+        soup = BeautifulSoup(html_win, "html.parser")
+        table = soup.find("table", class_="sortable")
+        if table:
+            for row in table.select("tbody tr"):
+                cols = row.find_all("td")
+                if cols:
+                    name = cols[0].get_text(strip=True)
+                    if name:
+                        stations.append(name)
+
+    return base_url, city, source_type, stations
 
 
 class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -51,14 +87,17 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         self._base_url: str = ""
         self._city: str = ""
+        self._source_type: str = SOURCE_TYPE_A
+        self._stations: list[str] = []
+        self._station: str = STATION_CHEAPEST
 
     async def async_step_user(self, user_input=None):
         errors: dict[str, str] = {}
 
         if user_input is not None:
             try:
-                base_url, city = await self.hass.async_add_executor_job(
-                    _validate_connection,
+                base_url, city, source_type, stations = await self.hass.async_add_executor_job(
+                    _validate_and_fetch,
                     user_input[CONF_BASE_URL],
                     user_input[CONF_CITY],
                 )
@@ -69,6 +108,10 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 self._base_url = base_url
                 self._city = city
+                self._source_type = source_type
+                self._stations = stations
+                if source_type == SOURCE_TYPE_B:
+                    return await self.async_step_station()
                 return await self.async_step_fuel_types()
 
         return self.async_show_form(
@@ -76,6 +119,31 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema({
                 vol.Required(CONF_BASE_URL): str,
                 vol.Required(CONF_CITY): str,
+            }),
+            errors=errors,
+        )
+
+    async def async_step_station(self, user_input=None):
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            self._station = user_input[CONF_STATION]
+            return await self.async_step_fuel_types()
+
+        station_options = [{"value": STATION_CHEAPEST, "label": "Cheapest (top 5)"}] + [
+            {"value": name, "label": name} for name in self._stations
+        ]
+
+        return self.async_show_form(
+            step_id="station",
+            data_schema=vol.Schema({
+                vol.Required(CONF_STATION, default=STATION_CHEAPEST): SelectSelector(
+                    SelectSelectorConfig(
+                        options=station_options,
+                        multiple=False,
+                        mode=SelectSelectorMode.LIST,
+                    )
+                ),
             }),
             errors=errors,
         )
@@ -91,13 +159,17 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     f"fuel_price_{urlparse(self._base_url).netloc}_{self._city}"
                 )
                 self._abort_if_unique_id_configured()
+                entry_data = {
+                    CONF_BASE_URL: self._base_url,
+                    CONF_CITY: self._city,
+                    CONF_SOURCE_TYPE: self._source_type,
+                    CONF_FUEL_TYPES: user_input[CONF_FUEL_TYPES],
+                }
+                if self._source_type == SOURCE_TYPE_B:
+                    entry_data[CONF_STATION] = self._station
                 return self.async_create_entry(
                     title=self._city.capitalize(),
-                    data={
-                        CONF_BASE_URL: self._base_url,
-                        CONF_CITY: self._city,
-                        CONF_FUEL_TYPES: user_input[CONF_FUEL_TYPES],
-                    },
+                    data=entry_data,
                 )
 
         return self.async_show_form(

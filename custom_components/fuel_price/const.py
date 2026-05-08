@@ -10,4 +10,18 @@ FUEL_TABS = {
 CONF_CITY = "city"
 CONF_BASE_URL = "base_url"
 CONF_FUEL_TYPES = "fuel_types"
+CONF_STATION = "station"
+CONF_SOURCE_TYPE = "source_type"
 TOP_N_STATIONS = 5
+
+SOURCE_TYPE_A = "type_a"
+SOURCE_TYPE_B = "type_b"
+
+STATION_CHEAPEST = "__cheapest__"
+
+# Column indices in type_b table: station(0), updated(1), 95_e10(2), 98_e5(3), diesel(4)
+FUEL_COLUMNS = {
+    "95_e10": 2,
+    "98_e5": 3,
+    "diesel": 4,
+}
