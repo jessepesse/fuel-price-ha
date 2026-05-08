@@ -23,3 +23,14 @@ jobs:
         with:
           files: fuel_price.zip
           generate_release_notes: true
+          body: |
+            ## Installation
+
+            ### HACS (recommended)
+            1. Add this repository as a custom repository in HACS
+            2. Search for "Fuel Price Sensor" and install
+            3. Restart Home Assistant
+            4. Go to **Settings → Devices & Services → Add Integration → Fuel Price Sensor**
+
+            ### Manual
+            Download `fuel_price.zip`, extract and copy `custom_components/fuel_price` to your HA `config/custom_components/` directory.
