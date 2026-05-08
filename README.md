@@ -1,6 +1,8 @@
 # Fuel Price Sensor — Home Assistant integration
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Release](https://img.shields.io/github/v/release/jessepesse/fuel-price-ha?label=release)](https://github.com/jessepesse/fuel-price-ha/releases/latest)
+[![Pre-release](https://img.shields.io/github/v/release/jessepesse/fuel-price-ha?include_prereleases&label=dev)](https://github.com/jessepesse/fuel-price-ha/releases)
 
 Home Assistant integration that tracks cheapest fuel prices by city. Prices update automatically every 30 minutes.
 
