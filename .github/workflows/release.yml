@@ -23,6 +23,7 @@ jobs:
         with:
           files: fuel_price.zip
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-dev') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
           body: |
             ## Installation
 
