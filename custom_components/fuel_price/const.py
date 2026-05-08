@@ -12,6 +12,7 @@ CONF_BASE_URL = "base_url"
 CONF_FUEL_TYPES = "fuel_types"
 CONF_STATION = "station"
 CONF_SOURCE_TYPE = "source_type"
+CONF_SCAN_INTERVAL = "scan_interval"
 TOP_N_STATIONS = 5
 
 SOURCE_TYPE_A = "type_a"

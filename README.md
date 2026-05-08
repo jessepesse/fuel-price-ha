@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/jessepesse/fuel-price-ha?label=release)](https://github.com/jessepesse/fuel-price-ha/releases/latest)
 [![Pre-release](https://img.shields.io/github/v/release/jessepesse/fuel-price-ha?include_prereleases&label=dev)](https://github.com/jessepesse/fuel-price-ha/releases)
 
-Home Assistant integration that tracks fuel prices by city. Prices update automatically every 30 minutes.
+Home Assistant integration that tracks fuel prices by city. The update interval is configurable during setup (5, 10, 15, 30 or 60 minutes).
 
 ## Sensors
 

@@ -18,9 +18,10 @@
       },
       "fuel_types": {
         "title": "Valitse polttoainetyypit",
-        "description": "Valitse mitä polttoaineita haluat seurata.",
+        "description": "Valitse seurattavat polttoainetyypit ja hintojen päivitysväli.",
         "data": {
-          "fuel_types": "Polttoainetyypit"
+          "fuel_types": "Polttoainetyypit",
+          "scan_interval": "Päivitysväli"
         }
       }
     },

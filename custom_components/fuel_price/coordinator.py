@@ -20,6 +20,7 @@ from .const import (
     SOURCE_TYPE_B,
     CONF_SOURCE_TYPE,
     CONF_STATION,
+    CONF_SCAN_INTERVAL,
     STATION_CHEAPEST,
 )
 
@@ -115,12 +116,13 @@ class FuelPriceCoordinator(DataUpdateCoordinator):
         self.city = city.lower()
         self.source_type: str = entry.data.get(CONF_SOURCE_TYPE, SOURCE_TYPE_A)
         self.station_filter: str = entry.data.get(CONF_STATION, STATION_CHEAPEST)
+        interval = entry.data.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL_MINUTES)
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN}_{self.city}",
             config_entry=entry,
-            update_interval=timedelta(minutes=SCAN_INTERVAL_MINUTES),
+            update_interval=timedelta(minutes=interval),
             always_update=False,
         )
 

@@ -19,6 +19,8 @@ from .const import (
     CONF_FUEL_TYPES,
     CONF_STATION,
     CONF_SOURCE_TYPE,
+    CONF_SCAN_INTERVAL,
+    SCAN_INTERVAL_MINUTES,
     FUEL_TABS,
     SOURCE_TYPE_A,
     SOURCE_TYPE_B,
@@ -31,6 +33,14 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; HomeAssistantIntegration/1.0)
 FUEL_OPTIONS = [
     {"value": key, "label": label}
     for key, (_tab_id, label) in FUEL_TABS.items()
+]
+
+INTERVAL_OPTIONS = [
+    {"value": "5", "label": "5 min"},
+    {"value": "10", "label": "10 min"},
+    {"value": "15", "label": "15 min"},
+    {"value": "30", "label": "30 min"},
+    {"value": "60", "label": "60 min"},
 ]
 
 
@@ -176,6 +186,7 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_CITY: self._city,
                     CONF_SOURCE_TYPE: self._source_type,
                     CONF_FUEL_TYPES: user_input[CONF_FUEL_TYPES],
+                    CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
                 }
                 if self._source_type == SOURCE_TYPE_B:
                     entry_data[CONF_STATION] = self._station
@@ -191,6 +202,13 @@ class FuelPriceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     SelectSelectorConfig(
                         options=FUEL_OPTIONS,
                         multiple=True,
+                        mode=SelectSelectorMode.LIST,
+                    )
+                ),
+                vol.Required(CONF_SCAN_INTERVAL, default=str(SCAN_INTERVAL_MINUTES)): SelectSelector(
+                    SelectSelectorConfig(
+                        options=INTERVAL_OPTIONS,
+                        multiple=False,
                         mode=SelectSelectorMode.LIST,
                     )
                 ),

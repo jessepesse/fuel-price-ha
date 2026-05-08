@@ -18,9 +18,10 @@
       },
       "fuel_types": {
         "title": "Select fuel types",
-        "description": "Choose which fuel types you want to track.",
+        "description": "Choose which fuel types to track and how often prices should be updated.",
         "data": {
-          "fuel_types": "Fuel types"
+          "fuel_types": "Fuel types",
+          "scan_interval": "Update interval"
         }
       }
     },
