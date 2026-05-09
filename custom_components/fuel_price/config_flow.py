@@ -26,7 +26,7 @@ from .const import (
     SOURCE_TYPE_B,
     STATION_CHEAPEST,
 )
-from .coordinator import detect_source_type, fetch_type_b
+from .coordinator import detect_source_type, TABLE_CLASS
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; HomeAssistantIntegration/1.0)"}
 
@@ -61,25 +61,16 @@ def _validate_and_fetch(base_url: str, city: str) -> tuple[str, str, str, list[s
         raise ValueError("city_not_found")
     resp.raise_for_status()
 
-    # Try UTF-8 first for type detection, fall back to windows-1252
-    try:
-        html_utf8 = resp.text
-        source_type = detect_source_type(html_utf8)
-    except Exception:
-        source_type = None
-
-    if source_type is None:
-        html_win = resp.content.decode("windows-1252", errors="replace")
-        source_type = detect_source_type(html_win)
+    html_win = resp.content.decode("windows-1252", errors="replace")
+    source_type = detect_source_type(resp.text) or detect_source_type(html_win)
 
     if source_type is None:
         raise ValueError("city_not_found")
 
     stations: list[str] = []
     if source_type == SOURCE_TYPE_B:
-        html_win = resp.content.decode("windows-1252", errors="replace")
         soup = BeautifulSoup(html_win, "html.parser")
-        table = soup.find("table", class_="e10")
+        table = soup.find("table", class_=TABLE_CLASS)
         if table:
             for row in table.select("tr"):
                 cols = row.find_all("td")
